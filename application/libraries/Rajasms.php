@@ -158,7 +158,7 @@ class Rajasms {
         return $ret;
     }
     
-    public function get_report($sms_result) {
+    public function get_report($sms_result=array()) {
         if ((is_array($sms_result)==TRUE) && (count($sms_result)==2) && (isset($sms_result['id'])==TRUE) && (isset($sms_result['is_masking'])==TRUE)) {
             $id = intval(trim(strval($sms_result['id'])));
             $uri = ($sms_result['is_masking']==TRUE) ? $this->uri_report_masking : $this->uri_report_regular;
