@@ -55,10 +55,20 @@ Contoh Implementasi pada Controller
     </ul>
   </li>
   <li>
-    Set nomor ponsel tujuan, set isi SMS, dan mengirim SMS:
+    Set nomor ponsel tujuan:
     <ul>
       <li><code>$this->rajasms->set_number('08xxxxxxxxxx');</code></li>
+    <ul>
+  </li>
+  <li>
+    Set isi SMS:
+    <ul>
       <li><code>$this->rajasms->set_text('Isi SMS');</code></li>
+    <ul>
+  </li>
+  <li>
+    Kirim SMS:
+    <ul>
       <li><code>$sms_result = $this->rajasms->send();</code></li>
     <ul>
   </li>
