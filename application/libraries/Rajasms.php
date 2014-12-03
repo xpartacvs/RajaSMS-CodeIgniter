@@ -6,6 +6,7 @@ class Rajasms {
     const REGEX_PHONE_TELCO = '/^(0[1-9]{1}[0-9]{1,2})[0-9]{6,8}$/';
 
     private $host;
+    private $timeout;
 
     private $uri_gateway_regular;
     private $uri_gateway_masking;
@@ -23,10 +24,13 @@ class Rajasms {
     private $phone;
 
     public function __construct() {
+        $this->_check_compatibility();
+
         $CI =& get_instance();
         $CI->load->config('rajasms');
 
         $this->host  = ($CI->config->item('rajasms_host')!==FALSE) ? $CI->config->item('rajasms_host') : 'http://162.211.84.203/sms';
+        $this->timeout = ($CI->config->item('rajasms_timeout')!==FALSE) ? $CI->config->item('rajasms_timeout') : 120;
         
         $this->uri_gateway_regular = ($CI->config->item('rajasms_uri_gateway_regular')!==FALSE) ? $CI->config->item('rajasms_uri_gateway_regular') : '/smsreguler.php';
         $this->uri_gateway_masking = ($CI->config->item('rajasms_uri_gateway_masking')!==FALSE) ? $CI->config->item('rajasms_uri_gateway_masking') : '/smsmasking.php';
@@ -41,6 +45,44 @@ class Rajasms {
         $this->account_key = ($CI->config->item('rajasms_key')!==FALSE) ? $CI->config->item('rajasms_key') : '';
 
         $this->reset();
+    }
+
+    private function _check_compatibility() {
+        if (!extension_loaded('curl')) throw new Exception('There is missing dependant extensions - please ensure both cURL modules are installed');
+    }
+
+    private function _credit_inquiry() {
+        $data = array(
+            'username' => $this->account_username, 
+            'password' => $this->account_password,
+            'key' => $this->account_key
+        );
+        $url = $this->host.$this->uri_credit.'?'.http_build_query($data);
+        $c = curl_init();
+        curl_setopt($c,CURLOPT_URL,$url);
+        curl_setopt($c,CURLOPT_HEADER, 0);
+        curl_setopt($c,CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($c,CURLOPT_TIMEOUT,$this->timeout);
+        $r = strval(curl_exec($c));
+        curl_close($c); 
+        unset($c,$url,$data);
+        return $r;
+    }
+
+    private function _credit_validate() {
+        $c = explode('|', $this->_credit_inquiry());
+        if (is_array($c) && count($c)==2) {
+            $saldo = intval($c[0]);
+            $expired = strtotime($c[1]);
+            $r = (($saldo>500) && ($expired>time())) ? TRUE : FALSE;
+        } else $r = FALSE;
+        unset($c);
+        return $r;
+    }
+
+    private function _is_ready() {
+        $r = ((strlen($this->text)>0) && (strlen($this->phone)>0) && ($this->_credit_validate()===TRUE)) ? TRUE : FALSE;
+        return $r;
     }
     
     public function reset() {
@@ -65,32 +107,7 @@ class Rajasms {
         $t = trim(strval($text));
         $this->text = (strlen($t)>160)?substr($t,0,160):$t;
     }
-    
-    private function _credit_inquiry() {
-        $data = array(
-            'username' => $this->account_username, 
-            'password' => $this->account_password,
-            'key' => $this->account_key
-        );
-        $url = $this->host.$this->uri_credit.'?'.http_build_query($data);
-        $c = curl_init();
-        curl_setopt($c,CURLOPT_URL,$url);
-        curl_setopt($c,CURLOPT_HEADER, 0);
-        curl_setopt($c,CURLOPT_RETURNTRANSFER, TRUE);
-        curl_setopt($c,CURLOPT_TIMEOUT,120);
-        $r = strval(curl_exec($c));
-        curl_close($c);	
-        unset($c,$url,$data);
-        return $r;
-    }
-    
-    public function get_credit() {
-        $r = explode('|', $this->_credit_inquiry());
-        $ret = (is_array($r) && count($r)==2) ? intval($r[0]) : FALSE;
-        unset($r);
-        return $ret;
-    }
-    
+
     public function get_expire_timestamp() {
         $r = explode('|', $this->_credit_inquiry());
         $ret = (is_array($r) && count($r)==2) ? strtotime($r[1]) : FALSE;
@@ -103,20 +120,11 @@ class Rajasms {
         $r = ($t!==FALSE) ? date($format,$t) : FALSE;
     }
     
-    private function _credit_validate() {
-        $c = explode('|', $this->_credit_inquiry());
-        if (is_array($c) && count($c)==2) {
-            $saldo = intval($c[0]);
-            $expired = strtotime($c[1]);
-            $r = (($saldo>500) && ($expired>time())) ? TRUE : FALSE;
-        } else $r = FALSE;
-        unset($c);
-        return $r;
-    }
-    
-    private function _is_ready() {
-        $r = ((strlen($this->text)>0) && (strlen($this->phone)>0) && ($this->_credit_validate()===TRUE)) ? TRUE : FALSE;
-        return $r;
+    public function get_credit() {
+        $r = explode('|', $this->_credit_inquiry());
+        $ret = (is_array($r) && count($r)==2) ? intval($r[0]) : FALSE;
+        unset($r);
+        return $ret;
     }
     
     public function send($is_masking=FALSE) {
@@ -140,7 +148,7 @@ class Rajasms {
             curl_setopt($c,CURLOPT_URL,$url);
             curl_setopt($c,CURLOPT_HEADER, 0);
             curl_setopt($c,CURLOPT_RETURNTRANSFER, TRUE);
-            curl_setopt($c,CURLOPT_TIMEOUT,120);
+            curl_setopt($c,CURLOPT_TIMEOUT,$this->timeout);
             $r = explode('|', strval(curl_exec($c)));
             curl_close($c);
             $ret = (is_array($r) && count($r)==2) ? (($r[0]==0) ? array('id'=>$r[1],'is_masking'=>$b_masking) : FALSE) : FALSE;
@@ -160,7 +168,7 @@ class Rajasms {
             curl_setopt($c,CURLOPT_URL,$url);
             curl_setopt($c,CURLOPT_HEADER, 0);
             curl_setopt($c,CURLOPT_RETURNTRANSFER, TRUE);
-            curl_setopt($c,CURLOPT_TIMEOUT,120);
+            curl_setopt($c,CURLOPT_TIMEOUT,$this->timeout);
             $r = explode('|', strval(curl_exec($c)));
             curl_close($c);
             $ret = (is_array($r) && count($r)==2) ? (($r[0]==0)?strtolower($r[1]):FALSE) : FALSE;

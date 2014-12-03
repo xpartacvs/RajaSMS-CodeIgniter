@@ -8,6 +8,7 @@ $config['rajasms_key'] 		= '';	// APIKEY AKUN RAJASMS
 /*
 // OPTIONAL CONFIG 
 $config['rajasms_host'] = 'http://162.211.84.203/sms';
+$config['rajasms_timeout'] = 120;
 $config['rajasms_uri_gateway_regular'] = '/smsreguler.php';
 $config['rajasms_uri_gateway_masking'] = '/smsmasking.php';
 $config['rajasms_uri_report_regular'] = '/smsregulerreport.php';
