@@ -93,8 +93,3 @@ Contoh Implementasi pada Controller
     <ul>
   </li>
 </ol>
-
-Author
-======
-
-<a href="https://github.com/xpartacvs">xpartacvs</a>
