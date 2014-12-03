@@ -31,14 +31,14 @@ Instalasi
 Daftar Fungsi
 =============
 <ul>
-  <li><code>int get_credit()</code> - Mengambil nilai saldo akun. Return FALSE jika gagal (cek dengan operator <code>===</code>).</li>
-  <li><code>string get_expire_date([string $format = 'Y-m-d H:i:s'])</code> - Mengambil tanggal kedaluarsa akun. Return FALSE jika gagal (cek dengan operator <code>===</code>).</li>
-  <li><code>int get_expire_timestamp()</code> - Mengambil nilai waktu kedaluarsa akun dalam format UNIX TIMESPAMP. Return FALSE jika gagal (cek dengan operator <code>===</code>).</li>
-  <li><code>string get_report(array $sms_result)</code> - Mengambil laporan hasil kirim SMS dari nilai balik fungsi <code>send()</code>. Return FALSE jika gagal (cek dengan operator <code>===</code>).</li>
-  <li><code>array send([bool $is_masking = FALSE])</code> - Mengirim SMS. Jika <code>$is_masking</code> bernilai TRUE maka nomor pengirim akan disamarkan. Return FALSE jika gagal (cek dengan operator <code>===</code>).</li>
-  <li><code>void set_number(string $nomor_ponsel [,bool $is_validate = FALSE])</code> - Untuk assign nomor ponsel tujuan.</li>
-  <li><code>void set_text(string $text)</code> - Untuk assign isi SMS.</li>
-  <li><code>void reset()</code> - Menghapus nomor ponsel tujuan dan isi SMS.</li>
+  <li><code>int get_credit()</code><br>Mengambil nilai saldo akun. Return FALSE jika gagal.</li>
+  <li><code>string get_expire_date([string $format = 'Y-m-d H:i:s'])</code><br>Mengambil tanggal kedaluarsa akun. Return FALSE jika gagal.</li>
+  <li><code>int get_expire_timestamp()</code><br>Mengambil nilai waktu kedaluarsa akun dalam format UNIX TIMESPAMP. Return FALSE jika gagal.</li>
+  <li><code>string get_report(array $sms_result)</code><br>Mengambil laporan hasil kirim SMS dari nilai balik fungsi <code>send()</code>. Return FALSE jika gagal.</li>
+  <li><code>array send([bool $is_masking = FALSE])</code><br>Mengirim SMS. Jika <code>$is_masking</code> bernilai TRUE maka nomor pengirim akan disamarkan. Return FALSE jika gagal.</li>
+  <li><code>void set_number(string $nomor_ponsel [,bool $is_validate = FALSE])</code><br>Untuk assign nomor ponsel tujuan.</li>
+  <li><code>void set_text(string $text)</code><br>Untuk assign isi SMS.</li>
+  <li><code>void reset()</code><br>Menghapus nomor ponsel tujuan dan isi SMS.</li>
   
   
 </ul>
