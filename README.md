@@ -9,6 +9,7 @@ Kebutuhan Sistem
 <ul>
   <li>PHP >= 5.3</li>
   <li>cURL extension</li>
+  <li>Framework CodeIgniter 2.x</li>
 </ul>
 
 Instalasi
